@@ -1,0 +1,39 @@
+import React from 'react';
+import { useState } from 'react';
+
+  const products = [
+
+    { id: 1, name: 'Product 1', image: '/path/to/image1.jpg' },
+    { id: 2, name: 'Product 2', image: '/path/to/image2.jpg' },
+  ]
+
+
+
+function App() {
+
+  const [selectedProduct, setSelectedProduct] = useState(products[0]);
+
+
+
+  return (
+    <div>
+      <div>
+          <div>
+            <h2>{selectedProduct.name}</h2>
+          </div>
+      </div>
+      <div>
+        {products.map(product =>
+          <div key={product.id} onClick={setSelectedProduct(product)} >
+            <img src={product.image} alt={product.name}/>
+            <p>{product.name}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+export default App;
+
+// this code for show products in react and when press on product it show product on side
+

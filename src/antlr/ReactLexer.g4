@@ -1,0 +1,469 @@
+lexer grammar ReactLexer;
+
+COLON:':'
+ ;
+OPEN_SQUAREBRACKET:'['
+ ;
+CLOSE_SQUAREBRACKET:']'
+ ;
+OPEN_CURLYBRACES:'{'
+ ;
+CLOSE_CURLYBRACES:'}'
+ ;
+IMPORT: 'import'
+ ;
+FROM: 'from'
+ ;
+CONST: 'const'
+ ;
+EXPORT: 'export'
+ ;
+DEFAULT: 'default'
+ ;
+LET:'let'
+ ;
+VAR:'var'
+ ;
+USESTATE:'useState' WS? OPEN_PARENTHESIS
+ ;
+fragment TRUE:'true'
+ ;
+fragment FALES:'fales'
+ ;
+BOOLEAN: TRUE|FALES
+ ;
+React:'React.createElement'->pushMode(React_MODE);
+ //  <-----  symbols ----->
+
+OPEN_PARENTHESIS:'('
+ ;
+ STARTFUN:')' WS? '{'
+  -> pushMode(FUNCTION_MODE);
+CLOSE_PARENTHESIS:')'
+ -> pushMode(FUNCTION_MODE);
+EQUAL:'='
+ ;
+COMMA:','
+ ;
+DOT:'.'
+ ;
+ARROW:'=>'
+ -> pushMode(FUNCTION_MODE)
+ ;
+SEMICOLON :';'
+ ;
+ADD:'+'
+ ;
+MULT:'*'
+ ;
+DIV :'/'
+ ;
+SUB:'-'
+ ;
+ELSE: 'else'
+ ;
+IF: 'if'
+ -> pushMode(IF_MODE)
+  ;
+GREATERTHAN:'>'
+ ;
+SMALLERTHAN:'<'
+ ->pushMode(JSX_MODE)
+ ;
+ // variable
+fragment INT: [0-9]+
+ ;
+fragment DOUBLE: [0-9]* '.' [0-9]+
+ ;
+NUMBER:  DOUBLE | INT
+ ;
+
+
+fragment STRING_SINGLEQUTES:'\''  ~('\r' | '\n' | '\'')* '\''
+ ;
+fragment STRING_DOUBLEQUTES:'"'  ~('\r' | '\n' | '"')* '"'
+ ;
+STRING:(STRING_SINGLEQUTES|STRING_DOUBLEQUTES)
+ ;
+COMMENT: '//' ~[\n\r]* -> skip
+  ;
+WS: [ \t\r\n]+ -> skip;
+
+// <jsx>
+IMG: 'img'
+ ;
+ANCHOR: 'a'
+ ;
+NORMALELEMENT: ('h1'|'h2'|'h3'|'h4'|'h5'|'h6'|'li'|'ul'|'p'|'div')
+ ;
+
+ // <-----  function ----->
+
+FUNCTION: 'function'
+ ;
+
+mode FUNCTION_MODE;
+DOT_FUNCTION:DOT -> type(DOT)
+ ;
+SEMICOLON_FUNCTION: SEMICOLON-> type(SEMICOLON)
+ ;
+OPEN_CURLYBRACES_FUNCTION : OPEN_CURLYBRACES -> type(OPEN_CURLYBRACES)
+ ,pushMode(OPENCURLY_MODE);
+
+CLOSE_CURLYBRACES_FUNCTION:CLOSE_CURLYBRACES
+  ->  popMode,type(CLOSE_CURLYBRACES)
+ ;
+OPEN_PARENTHESIS_FUNCTION :OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS)
+ ;
+CLOSE_PARENTHESIS_FUNCTION :CLOSE_PARENTHESIS -> type(CLOSE_PARENTHESIS)
+ ;
+COMMA_FUNCTION:COMMA -> type(COMMA)
+ ;
+BOOLEAN_FUNCTION:BOOLEAN ->type(BOOLEAN)
+  ;
+USESTATE_FUNCTION:USESTATE -> type(USESTATE)
+ ;
+RETURN:'return'
+ ;
+IF_FUNCTION: IF
+ -> type(IF),pushMode(IF_MODE);
+SEMICOLON_FUN :SEMICOLON ->type(SEMICOLON)
+  ;
+ADD_FUNCTION:ADD ->type(ADD)
+ ;
+MULT_FUNCTION:MULT ->type(MULT)
+ ;
+DIV_FUNCTION :DIV ->type(DIV)
+ ;
+SUB_FUNCTION:SUB ->type(SUB)
+ ;
+VAR_FUNCTION:VAR -> type(VAR)
+ ;
+CONST_FUNCTION:CONST -> type(CONST)
+ ;
+
+OPEN_SQUAREBRACKET_FUNCTION: OPEN_SQUAREBRACKET -> type(OPEN_SQUAREBRACKET)
+ ;
+CLOSE_SQUAREBRACKET_FUNCTION: CLOSE_SQUAREBRACKET -> type(CLOSE_SQUAREBRACKET)
+ ;
+COLON_FUNCTION: COLON -> type(COLON)
+ ;
+LET_FUNCTION: LET -> type(LET)
+ ;
+
+EQUAL_FUNCTION: EQUAL -> type(EQUAL)
+ ;
+
+GREATERTHAN_FUNCTION: GREATERTHAN -> type(GREATERTHAN)
+ ;
+SMALLERTHAN_FUNCTION: SMALLERTHAN -> type(SMALLERTHAN),pushMode(JSX_MODE)
+ ;
+IMG_FUNCTION: IMG -> type(IMG)
+ ;
+ ANCHOR_FUNCTION: ANCHOR -> type(ANCHOR)
+ ;
+NORMALELEMENT_FUNCTION: NORMALELEMENT -> type(NORMALELEMENT)
+ ;
+NUMBER_FUNCTION: NUMBER -> type(NUMBER)
+ ;
+STRING_FUNCTION: STRING -> type(STRING)
+ ;
+React_FUNCTION:React
+ ->type(React),pushMode(React_MODE);
+ID_FUNCTION: ID -> type(ID)
+ ;
+ COMMENT1: '//' ~[\n\r]* -> skip
+   ;
+WS1: [ \t\r\n]+ -> skip
+ ;
+
+ // to aviod close function at first '}'
+mode OPENCURLY_MODE;
+
+DOT_OPENCURLY: DOT -> type(DOT)
+ ;
+SEMICOLON_OPENCURLY: SEMICOLON -> type(SEMICOLON)
+ ;
+OPEN_CURLYBRACES_OPENCURLY: OPEN_CURLYBRACES -> pushMode(OPENCURLY_MODE)
+, type(OPEN_CURLYBRACES)
+;
+CLOSE_CURLYBRACES_OPENCURLY: CLOSE_CURLYBRACES ->
+popMode, type(CLOSE_CURLYBRACES)
+;
+OPEN_PARENTHESIS_OPENCURLY: OPEN_PARENTHESIS ->
+type(OPEN_PARENTHESIS)
+;
+CLOSE_PARENTHESIS_OPENCURLY: CLOSE_PARENTHESIS
+-> type(CLOSE_PARENTHESIS)
+;
+COMMA_OPENCURLY: COMMA -> type(COMMA)
+;
+BOOLEAN_OPENCURLY: BOOLEAN -> type(BOOLEAN)
+ ;
+USESTATE_OPENCURLY:USESTATE -> type(USESTATE)
+  ;
+RETURN_OPENCURLY: 'return' -> type(RETURN)
+ ;
+IF_OPENCURLY: IF -> type(IF), pushMode(IF_MODE)
+ ;
+ADD_OPENCURLY: ADD -> type(ADD)
+ ;
+MULT_OPENCURLY: MULT -> type(MULT)
+ ;
+DIV_OPENCURLY: DIV -> type(DIV)
+ ;
+SUB_OPENCURLY: SUB -> type(SUB)
+ ;
+VAR_OPENCURLY: VAR -> type(VAR)
+ ;
+CONST_OPENCURLY: CONST -> type(CONST)
+ ;
+OPEN_SQUAREBRACKET_OPENCURLY: OPEN_SQUAREBRACKET -> type(OPEN_SQUAREBRACKET)
+ ;
+CLOSE_SQUAREBRACKET_OPENCURLY: CLOSE_SQUAREBRACKET -> type(CLOSE_SQUAREBRACKET)
+ ;
+COLON_OPENCURLY: COLON -> type(COLON)
+ ;
+LET_OPENCURLY: LET -> type(LET)
+ ;
+EQUAL_OPENCURLY: EQUAL -> type(EQUAL)
+ ;
+GREATERTHAN_OPENCURLY: GREATERTHAN -> type(GREATERTHAN)
+ ;
+SMALLERTHAN_OPENCURLY: SMALLERTHAN -> type(SMALLERTHAN), pushMode(JSX_MODE)
+ ;
+IMG_OPENCURLY: IMG -> type(IMG)
+ ;
+ANCHOR_OPENCURLY: ANCHOR -> type(ANCHOR)
+ ;
+NORMALELEMENT_OPENCURLY: NORMALELEMENT -> type(NORMALELEMENT)
+ ;
+NUMBER_OPENCURLY: NUMBER -> type(NUMBER)
+ ;
+STRING_OPENCURLY: STRING -> type(STRING)
+ ;
+React_OPENCURLY: React -> pushMode(React_MODE)
+ ;
+ID_OPENCURLY: ID -> type(ID)
+ ;
+ COMMENT5: '//' ~[\n\r]* -> skip
+   ;
+WS5: [ \t\r\n]+ -> skip
+ ;
+mode React_MODE;
+
+
+NORMALELEMENT_React:NORMALELEMENT->type(NORMALELEMENT);
+IMGReact: IMG->type(IMG);
+ANCHOR_React: ANCHOR->type(ANCHOR);
+ONCLICKr:'onClick'
+ ;
+STYLEr:'style'
+ ;
+SRCr:'src'
+ ;
+HREFr:'href'
+ ;
+CLASSNAMEr:'className'
+ ;
+
+OPEN_SQUAREBRACKET_React: OPEN_SQUAREBRACKET -> type(OPEN_SQUAREBRACKET)
+ ;
+CLOSE_SQUAREBRACKET_React: CLOSE_SQUAREBRACKET -> type(CLOSE_SQUAREBRACKET)
+ ;
+OPEN_PARENTHESIS_React: OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS)
+ ;
+CLOSE_PARENTHESIS_React: CLOSE_PARENTHESIS -> type(CLOSE_PARENTHESIS)
+ ;
+EQUAL_React: EQUAL -> type(EQUAL)
+ ;
+COMMA_React: COMMA -> type(COMMA)
+ ;
+DOT_React: DOT -> type(DOT)
+ ;
+ADD_React: ADD -> type(ADD)
+ ;
+MULT_React: MULT -> type(MULT)
+ ;
+DIV_React: DIV -> type(DIV)
+ ;
+SUB_React: SUB -> type(SUB)
+ ;
+NUMBER_React: NUMBER -> type(NUMBER)
+ ;
+BOOLEAN_React: BOOLEAN->type(BOOLEAN)
+ ;
+STRING_React: STRING -> type(STRING)
+;
+OPEN_CURLYBRACES_React: OPEN_CURLYBRACES -> type(OPEN_CURLYBRACES)
+ ;
+CLOSE_CURLYBRACES_React: CLOSE_CURLYBRACES -> type(CLOSE_CURLYBRACES)
+ ;
+
+COMMENT6: '//' ~[\n\r]* -> skip
+   ;
+WS6: [ \t\r\n]+ -> skip
+ ;
+
+
+//  <-----  jsx ----->
+
+
+mode JSX_MODE;
+
+
+// !!! warn !!!  check if push mode two time it should not
+Open:SMALLERTHAN -> type(SMALLERTHAN),pushMode(JSX_MODE)
+ ;
+OPEN_CURLYBRACES_JSX :  OPEN_CURLYBRACES->type(OPEN_CURLYBRACES)
+ ,pushMode(JSXEXP_MODE);
+CLOSE_CURLYBRACES_JSX : CLOSE_CURLYBRACES->type(CLOSE_CURLYBRACES)
+ ;
+CLOSE: GREATERTHAN ->type(GREATERTHAN)
+ ;
+
+NORMALELEMENTJSX:NORMALELEMENT->type(NORMALELEMENT);
+IMGJSX: IMG->type(IMG);
+ANCHOR_JSX: ANCHOR->type(ANCHOR);
+SELFCLOSETAG : '/>'->popMode;
+ONCLICK:'onClick'
+ ;
+ KEY:'key'
+ ;
+STYLE:'style'
+ ;
+SRC:'src'
+ ;
+ALT:'alt'
+ ;
+HREF:'href'
+ ;
+CLASSNAME:'className'
+ ;
+EQUAL_JSX: EQUAL
+ -> type(EQUAL);
+DOT_JSX: DOT
+ -> type(DOT);
+
+OPEN_PARENTHESIS_JSX: OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS)
+;
+CLOSE_PARENTHESIS_JSX: CLOSE_PARENTHESIS -> type(CLOSE_PARENTHESIS);
+
+COMMA_JSX: COMMA -> type(COMMA)
+ ;
+ADD_JSX: ADD -> type(ADD)
+ ;
+MULT_JSX: MULT -> type(MULT)
+ ;
+DIV_JSX: DIV -> type(DIV)
+ ;
+SUB_JSX: SUB -> type(SUB)
+ ;
+NUMBER_JSX: NUMBER -> type(NUMBER)
+ ;
+STRING_JSX: STRING -> type(STRING)
+ ;
+IF_JSX:IF
+ -> type(IF),pushMode(IF_MODE);
+
+CLOSETAG:'</'
+ ->popMode;
+
+COMMENT2: '//' ~[\n\r]* -> skip
+   ;
+WS2: [ \t\r\n]+ -> skip
+ ;
+CONTENT: (~('<' | '>'|'{'|'}'))
+ ;
+
+mode JSXEXP_MODE;
+DOT_JSXEXP:DOT->type(DOT);
+NUMBER_JSXEXP: NUMBER -> type(NUMBER)
+ ;
+STRING_JSXEXP: STRING -> type(STRING)
+ ;
+IMG_JSXEXP: IMG -> type(IMG)
+ ;
+ ANCHOR_JSXEXP: ANCHOR -> type(ANCHOR)
+ ;
+NORMALELEMENT_JSXEXP: NORMALELEMENT -> type(NORMALELEMENT)
+ ;
+ ARROW_JSXEXP:ARROW -> type(ARROW);
+OPEN_SQUAREBRACKET_JSXEXP:OPEN_SQUAREBRACKET ->type(OPEN_SQUAREBRACKET)
+ ;
+CLOSE_SQUAREBRACKET_JSXEXP:CLOSE_SQUAREBRACKET ->type(CLOSE_SQUAREBRACKET)
+ ;
+ADD_JSXEXP: ADD -> type(ADD)
+ ;
+OPEN_CURLYBRACES_JSXEXP :  OPEN_CURLYBRACES->type(OPEN_CURLYBRACES)
+  ,pushMode(JSXEXP_MODE);
+ CLOSE_CURLYBRACES_JSXEXP : CLOSE_CURLYBRACES->type(CLOSE_CURLYBRACES),popMode
+  ;
+ GREATERTHAN_JSXEXP:GREATERTHAN ->type(GREATERTHAN)
+  ;
+ SMALLERTHAN_JSXEXP:SMALLERTHAN -> type(SMALLERTHAN),pushMode(JSX_MODE);
+MULT_JSXEXP: MULT -> type(MULT)
+ ;
+DIV_JSXEXP: DIV -> type(DIV)
+ ;
+SUB_JSXEXP: SUB -> type(SUB)
+ ;
+COLON_JSXEXP:COLON ->type(COLON);
+OPEN_PARENTHESIS_JSXEXP: OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS)
+ ;
+CLOSE_PARENTHESIS_JSXEXP: CLOSE_PARENTHESIS -> type(CLOSE_PARENTHESIS)
+ ;
+EQUAL_JSXEXP: EQUAL -> type(EQUAL)
+ ;
+COMMA_JSXEXP: COMMA -> type(COMMA)
+ ;
+MAP:'map';
+ID_JSXEXP: ID -> type(ID)
+ ;
+
+COMMENT4: '//' ~[\n\r]* -> skip
+  ;
+WS4: [ \t\r\n]+ -> skip
+ ;
+
+mode IF_MODE;
+
+ISEQUAL:'=='
+ ;
+SOE:'<='
+ ;
+GOE:'>='
+ ;
+
+OPEN_PARENTHESIS_IF :OPEN_PARENTHESIS -> type(OPEN_PARENTHESIS)
+ ;
+CLOSE_PARENTHESIS_IF :CLOSE_PARENTHESIS -> type(CLOSE_PARENTHESIS),popMode
+ ;
+GREATERTHAN_IF:GREATERTHAN ->type(GREATERTHAN)
+ ;
+SMALLERTHAN_IF:SMALLERTHAN -> type(SMALLERTHAN);
+EQUAL_IF: EQUAL -> type(EQUAL)
+ ;
+ADD_IF: ADD -> type(ADD)
+ ;
+MULT_IF: MULT -> type(MULT)
+ ;
+DIV_IF: DIV -> type(DIV)
+ ;
+SUB_IF: SUB -> type(SUB)
+ ;
+NUMBER_IF: NUMBER -> type(NUMBER)
+ ;
+BOOLEAN_IF:BOOLEAN ->type(BOOLEAN)
+  ;
+ID_IF: ID -> type(ID)
+ ;
+
+ COMMENT3: '//' ~[\n\r]* -> skip
+   ;
+WS3: [ \t\r\n]+ -> skip
+ ;
+
+mode DEFAULT_MODE;
+ID: ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
+  ;
